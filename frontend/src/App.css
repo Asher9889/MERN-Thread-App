@@ -1,0 +1,14 @@
+.toast::before{
+    content: " ";
+    border-top: 10px solid pink;
+    inset: 0;
+    width: 100%;
+    position: absolute;
+    animation: line 7s ease   forwards;
+}
+
+@keyframes line {
+    100%{
+        width: 0;
+    }
+}
