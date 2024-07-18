@@ -6,6 +6,7 @@ export default function PostPage(){
             <UserPost />
             <GetApp />
             <Comment />
+            <Comment />
 
         </div>
     )
