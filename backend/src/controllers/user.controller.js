@@ -132,5 +132,21 @@ export async function logoutController(req, res){
 // <--------------- followOrUnFollowuser ------------>
 
 export async function followAndUnFollowUserController(req, res){
-  
+  // 
+  const followedUser = req.params.id;
+  const loggedInUser = req.user._id;
+  if(loggedInUser === followedUser){
+    return res.status(400).json(new FailureResponse(400, "Can not follow or Unfollow yourself."))
+  }
+  const isFollowing = req.user.following.includes(followedUser);
+  if(!isFollowing){
+    return res.status(400).json(new FailureResponse(400, "You are not follwing that person"))
+  }else{
+    // removing followed user from logged in user
+    const updatedLoggedInUser = await User.findByIdAndUpdate(loggedInUser, {$pull: {following: followedUser}})
+    // removing loggedin user from followeduser
+    const updatedFollowedUser = await User.findByIdAndUpdate(followedUser, {$pull: {followers: loggedInUser}})
+
+    return res.status(200).json(new SuccessResponse(200, "Successfully updated the record"))
+  }
 }

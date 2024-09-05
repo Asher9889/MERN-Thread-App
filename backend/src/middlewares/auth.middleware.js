@@ -8,13 +8,11 @@ export default async function protectedRoute(req,res, next){
     try {
         // some times we get cookie from request header
         const token = req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "")
-        console.log(token)
         if(!token){
             throw new Error("No token is available. First login")
         }
         // decoding jwt token getting from request object
         const verifingToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        console.log("token is ",verifingToken.user_id )
         // removing password key from user object
         const user = await User.findById(verifingToken.user_id).select("-password")
         if(!user){
