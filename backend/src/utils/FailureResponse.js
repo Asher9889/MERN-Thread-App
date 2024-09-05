@@ -1,10 +1,9 @@
 class Failureresponse {
-    constructor(status, statusCode, message, data , error){
-    this.status = status;
+    constructor(statusCode, message){
     this.statusCode = statusCode;
+    this.status = false;
     this.message = message;
-    this.data = data;
-    this.error = error;
+    this.data = {};
     }
 }
 

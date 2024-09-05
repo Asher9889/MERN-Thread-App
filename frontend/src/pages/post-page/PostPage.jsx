@@ -7,7 +7,6 @@ export default function PostPage(){
             <GetApp />
             <Comment />
             <Comment />
-
         </div>
     )
 };
