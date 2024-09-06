@@ -13,4 +13,6 @@ router.post("/follow/:id",userMiddleware.protectedRoute , userController.followA
 router.post("/update/:id", userMiddleware.protectedRoute, userController.updateProfile);
 // no need to protect the route
 router.get("/profile/:username",userController.getUserProfile)
+
+
 export default router;
