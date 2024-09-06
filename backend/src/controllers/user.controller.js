@@ -140,13 +140,70 @@ export async function followAndUnFollowUserController(req, res){
   }
   const isFollowing = req.user.following.includes(followedUser);
   if(!isFollowing){
-    return res.status(400).json(new FailureResponse(400, "You are not follwing that person"))
+    // push operator for adding the value 
+    const updatedLoggedInUser = await User.findByIdAndUpdate(loggedInUser, {$push: {following: followedUser}})
+    const updatedFollowedUser = await User.findByIdAndUpdate(followedUser, {$push: {followers: loggedInUser}})
+    return res.status(400).json(new FailureResponse(400, "successfully started following that person "))
   }else{
     // removing followed user from logged in user
+    // pull operator for removing the value
     const updatedLoggedInUser = await User.findByIdAndUpdate(loggedInUser, {$pull: {following: followedUser}})
     // removing loggedin user from followeduser
     const updatedFollowedUser = await User.findByIdAndUpdate(followedUser, {$pull: {followers: loggedInUser}})
 
-    return res.status(200).json(new SuccessResponse(200, "Successfully updated the record"))
+    return res.status(200).json(new SuccessResponse(200, "Successfully unfollowed that person"))
   }
+}
+
+// <---------------- updating profile logic ----------->
+// when http request hit update route secureroute middleware get executed it search cookie from browser then parse it. 
+//  after parsing get an id. then search user with id. added user object in request object
+export async function updateProfile(req,res){
+  const {name,userName, email,bio, password} = req.body;
+  // we added a middleware for secure route amd added user obj in request object.
+  try {
+    const {_id} = req.user;
+    console.log(req.user);
+    const user = await User.findById(_id)
+    if(!user){
+      return res.status(400).json(new FailureResponse(400, "User is not present. Please login first"))
+    }
+    // user._id is a object need to convert it to string
+    if(req.params.id !== user._id.toString()){
+      return res.status(400).json(new FailureResponse(400, "You Can not update others profile"))
+    }
+    user.name = name || user.name;
+    user.userName = userName || user.userName;
+    user.email = email || user.email;
+    user.bio = bio || user.bio;
+    // hasing given password
+    if(password){
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(password, salt);
+    user.password = hashedPassword || user.password;
+    }
+    // now saving the user provided details
+    await user.save()
+    return res.status(200).json(new SuccessResponse(200, "Profile successfully updated"))
+  } catch (error) {
+     return res.status(400).json(new FailureResponse(400, error.message))
+  }
+}
+
+// <----------------- getUserProfile ------------>
+
+export async function getUserProfile(req, res){
+  try {
+    const { username } = req.params;
+    const user  = await User.findOne({userName: username}).select("-password")
+    if(!user){
+      return res.status(400).json(new FailureResponse(400, "User not found. Check username again"))
+    }else{
+      return res.status(200).json(new SuccessResponse(200, "User successfully fetch", user))
+    }
+
+  } catch (error) {
+    res.status(400).json(new FailureResponse(400, error.message))
+  }
+
 }
