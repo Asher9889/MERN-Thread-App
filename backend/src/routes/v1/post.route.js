@@ -5,5 +5,12 @@ const router = express.Router();
 
 // protecting the route. whichout login Noone can create post
 router.post("/create", userMiddleware.protectedRoute, postController.createPost)
+// getting single post with post id
+router.get("/:id", userMiddleware.protectedRoute, postController.getPost)
+// delete post
+router.delete("/:id", userMiddleware.protectedRoute, postController.deletePost)
+// for like and unlike
+router.post("/like/:id", userMiddleware.protectedRoute, postController.likeAndUnlike)
+
 
 export default router;

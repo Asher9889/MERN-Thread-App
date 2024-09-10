@@ -1,5 +1,7 @@
 import { loginController, signupController, logoutController, followAndUnFollowUserController, updateProfile, getUserProfile } from "./user.controller.js"
-import { createPost} from "./post.controller.js"
+import { createPost, getPost, deletePost, likeAndUnlike} from "./post.controller.js"
+
+
 export const userController = {
     signupController: signupController,
     loginController : loginController,
@@ -11,4 +13,7 @@ export const userController = {
 
 export const postController = {
     createPost: createPost,
+    getPost: getPost,
+    deletePost: deletePost,
+    likeAndUnlike: likeAndUnlike
 }

@@ -15,8 +15,11 @@ const postSchema = new mongoose.Schema({
         type: String
     },
     likes:{
-        type: Number,
-        default: 0
+        // storing users id in a array then count the length
+        type: [String],
+        default: []
+        
+
     },
     comment: {
         type: [
