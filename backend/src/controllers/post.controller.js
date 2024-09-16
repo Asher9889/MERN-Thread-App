@@ -51,21 +51,21 @@ export async function deletePost(req, res) {
   try {
     const deletedPost = await Post.findById(req.params.id);
     if (!deletePost) {
-        return res
-          .status(404)
-          .json(
-            new Failureresponse(404, "Post not found. Please use correct post id")
-          );
-      }
+      return res
+        .status(404)
+        .json(
+          new Failureresponse(404, "Post not found. Please use correct post id")
+        );
+    }
     if (deletedPost.postedBy.toString() !== req.user._id.toString()) {
       return res
         .status(401)
         .json(new Failureresponse(401, "you cannot delete another's post"));
     }
-  
+
     const post = await Post.findByIdAndDelete(req.params.id);
-    if(!post){
-        return res.status(500, "Server error" )
+    if (!post) {
+      return res.status(500, "Server error");
     }
     // await deletePost.remove();
     return res
@@ -76,28 +76,79 @@ export async function deletePost(req, res) {
   }
 }
 
-export async function likeAndUnlike(req, res){
-   try {
-     const {id: postId} = req.params;
-     console.log("post id is ",postId)
-     const userId = req.user._id
-     const post = await Post.findById(postId);
-     console.log("post is: ", post)
-     if(!post){
-         return res.status(404).json(new FailureResponse(404, "Post not found"))
-     }
- 
-     if(post.likes.includes(userId)){
-         // unlike the post
-         await Post.findByIdAndUpdate({_id: postId}, {$pull: {likes: userId}})
-         return res.status(200).json(new SuccessResponse(200, "Post successfully unliked"))
- 
-     }else{
-         // like the post
-         await Post.findByIdAndUpdate({_id: postId}, {$push: {likes: userId}})
-         return res.status(200).json(new SuccessResponse(200, "Post successfully liked"))
-     }
-   } catch (error) {
-        return res.status(500).json(new FailureResponse(500, error.message))
-   }
+export async function likeAndUnlike(req, res) {
+  try {
+    const { id: postId } = req.params;
+    console.log("post id is ", postId);
+    const userId = req.user._id;
+    const post = await Post.findById(postId);
+    console.log("post is: ", post);
+    if (!post) {
+      return res.status(404).json(new FailureResponse(404, "Post not found"));
+    }
+
+    if (post.likes.includes(userId)) {
+      // unlike the post
+      await Post.findByIdAndUpdate(
+        { _id: postId },
+        { $pull: { likes: userId } }
+      );
+      return res
+        .status(200)
+        .json(new SuccessResponse(200, "Post successfully unliked"));
+    } else {
+      // like the post
+      await Post.findByIdAndUpdate(
+        { _id: postId },
+        { $push: { likes: userId } }
+      );
+      return res
+        .status(200)
+        .json(new SuccessResponse(200, "Post successfully liked"));
+    }
+  } catch (error) {
+    return res.status(500).json(new FailureResponse(500, error.message));
+  }
+}
+
+// ------------ Comment in Post----------------
+export async function commentToPost(req, res) {
+  try {
+    const { text } = req.body;
+    if (text.trim().length < 1) {
+      return res
+        .status(400)
+        .json(
+          new FailureResponse(400, "Comment length should be greater than 1")
+        );
+    }
+    const { id } = req.params;
+    const { _id, userName, userProfilePic} = req.user;
+    const data = {
+      _id: _id,
+      userName: userName,
+      text: text,
+      userProfilePic: userProfilePic || "",
+    };
+    const updatedPost = await Post.findByIdAndUpdate(id, {
+      $push: { comment: data }
+    });
+    // console.log(updatedPost);
+    if (!updatedPost) {
+      return res.status(400).json(new FailureResponse(400, "Post not found"));
+    }
+    return res
+      .status(200)
+      .json(new SuccessResponse(200, "Comment successfully posted"));
+  } catch (error) {
+    return res
+    .status(200)
+    .json(new FailureResponse(500, error.message));
+    
+  }
+}
+
+// ------------- Feed Post --------------------
+export async function getFeedPost(){
+  
 }

@@ -31,7 +31,7 @@ const postSchema = new mongoose.Schema({
                 },
                 // not sure 
                 userName:{
-                    type: mongoose.Schema.Types.ObjectId,
+                    type: String,
                     ref: "User",
                     required: true
 

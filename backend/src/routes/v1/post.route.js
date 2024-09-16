@@ -11,6 +11,9 @@ router.get("/:id", userMiddleware.protectedRoute, postController.getPost)
 router.delete("/:id", userMiddleware.protectedRoute, postController.deletePost)
 // for like and unlike
 router.post("/like/:id", userMiddleware.protectedRoute, postController.likeAndUnlike)
-
+// comment to post
+router.post("/reply/:id", userMiddleware.protectedRoute, postController.commentToPost)
+// for feed display
+router.get("/feed", userMiddleware.protectedRoute, postController.getFeedPost)
 
 export default router;
