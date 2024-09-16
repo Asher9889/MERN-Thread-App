@@ -1,4 +1,5 @@
 import Post from "../models/post.model.js";
+import User from "../models/user.model.js";
 import Failureresponse from "../utils/FailureResponse.js";
 import FailureResponse from "../utils/FailureResponse.js";
 import SuccessResponse from "../utils/SuccessResponse.js";
@@ -149,6 +150,24 @@ export async function commentToPost(req, res) {
 }
 
 // ------------- Feed Post --------------------
-export async function getFeedPost(){
-  
+export async function getFeedPosts(req, res){
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+    if(!user){
+      return res.status(404).json(new FailureResponse(404, "User Not Found. Login first"))
+    }
+    const following = user.following;
+    console.log("following: ",following);
+    // user jisko bhi follow krega uski id nikali then post model mai search kiya.
+    const posts = await Post.find({postedBy: {$in: following}}).sort({createdAt: -1});
+    if(posts.length <1){
+      return res.status(200).json(new SuccessResponse(200, "No post is available. Please follow others"))
+    }else{
+      return res.status(200).json(new SuccessResponse(200, posts))
+    }
+  } catch (error) {
+    return res.status(500).json(500, error.message);
+  }
+
 }

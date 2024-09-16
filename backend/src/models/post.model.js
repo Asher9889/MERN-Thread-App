@@ -32,7 +32,6 @@ const postSchema = new mongoose.Schema({
                 // not sure 
                 userName:{
                     type: String,
-                    ref: "User",
                     required: true
 
                 },
