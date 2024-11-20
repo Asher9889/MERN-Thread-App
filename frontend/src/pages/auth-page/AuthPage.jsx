@@ -3,9 +3,11 @@ import LoginCard
 
 from "../../components/Login/LoginPage";
 const AuthPage = () => {
+
   return (
-    <div className=" mt-[15%] ">
+    <div className=" mt-[10%] ">
       <LoginCard />
+      <SignupCard />
     </div>
   )
 };

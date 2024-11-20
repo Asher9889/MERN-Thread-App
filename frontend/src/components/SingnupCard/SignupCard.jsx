@@ -1,34 +1,62 @@
-export default function SignupCard(){
-    return (
-        <div className="w-full bg-zinc-800 p-14 ">
+export default function SignupCard() {
+  return (
+    <div className="w-full bg-zinc-800 px-10 py-10 ">
       <p className="text-white text-2xl font-bold text-center">
         Login with your credentials
       </p>
 
       <form>
-        <div className=" flex flex-col items-center gap-3  text-white   mt-[5%] ">
-          <label className="w-2/3 text-xl" htmlFor="name">
-            Email
-          </label>
-          <input
-            className="w-2/3 h-10 rounded bg-zinc-800 border-zinc-500 border px-2 outline-none"
-            type="text"
-            id="name"
-          />
-          <label className="w-2/3 text-xl" htmlFor="name">
-            Password
-          </label>
-          <div className="w-2/3 h-10 flex flex-row  items-center  bg-zinc-800 border-zinc-500 border rounded px-2">
-            <input
-              className="flex-1 h-full rounded bg-transparent outline-none"
-              type="text"
-            />
-            
+        <div className=" flex flex-col items-center gap-6  text-white   mt-[5%] ">
+          <div className="w-full flex flex-row gap-[10%] ">
+            <div className="w-[45%] ">
+              <label className=" text-xl" htmlFor="name">
+                Full Name
+              </label>
+              <input
+                className="w-full h-10 rounded bg-zinc-800 border-zinc-500 border px-2 outline-none"
+                type="text"
+                id="name"
+                required
+              />
+            </div>
+            <div className="w-[45%] ">
+              <label className=" text-xl" htmlFor="userName">
+                Username
+              </label>
+              <input
+                className="w-full h-10 rounded bg-zinc-800 border-zinc-500 border px-2 outline-none"
+                type="text"
+                id="userName"
+                required
+              />
+            </div>
           </div>
-          <button
-         
-            className="w-2/3 mt-6 h-10  rounded text-white bg-blue-500"
-          >
+          <div className="w-full flex flex-col ">
+            <label className="w-full text-xl" htmlFor="email">
+              Email address
+            </label>
+
+            <input
+              className="w-full h-10 rounded bg-zinc-800 border-zinc-500 border px-2 outline-none"
+              type="email"
+              id="email"
+              required
+            />
+          </div>
+          <div className="w-full flex flex-col ">
+            <label className="w-full text-xl" htmlFor="password">
+              Password
+            </label>
+
+            <input
+              className="w-full h-10 rounded bg-zinc-800 border-zinc-500 border px-2 outline-none"
+              type="password"
+              required
+              id="password"
+            />
+          </div>
+
+          <button className="w-2/3 mt-6 h-10  rounded text-white bg-blue-500">
             Login
           </button>
         </div>
@@ -37,5 +65,5 @@ export default function SignupCard(){
         Don't have an account? <span className="text-blue-500 "> Sign Up</span>
       </p>
     </div>
-    )
+  );
 }

@@ -29,6 +29,7 @@ export default function LoginCard() {
             className="w-2/3 h-10 rounded bg-zinc-800 border-zinc-500 border px-2 outline-none"
             type="text"
             id="name"
+            required
           />
           <label className="w-2/3 text-xl" htmlFor="name">
             Password
@@ -37,6 +38,7 @@ export default function LoginCard() {
             <input
               className="flex-1 h-full rounded bg-transparent outline-none"
               type={showPassword ? "text" : "password"}
+              required
             />
             <span onClick={visiblePassword}>
               {showPassword ? (
