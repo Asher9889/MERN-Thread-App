@@ -1,10 +1,10 @@
 import { ContentWrapper, Header, UserPost} from './components'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { UserPage, PostPage, AuthPage} from './pages'
+import { UserPage, PostPage, AuthPage, UpdateProfile} from './pages'
 import { useSelector } from 'react-redux'
 import './App.css'
 import HomePage from './pages/home-page/HomePage'
-import { useEffect } from 'react'
+
 
 
 

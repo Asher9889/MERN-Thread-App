@@ -41,13 +41,15 @@ export async function signupController(req, res) {
       userName: userName,
       email: email,
       password: hashedPassword,
+      profilePic: "",
+      bio: ""
     });
 
     // checking user is created or not successfully
     const createdUser = await User.findOne({ userName: userName });
 
     if (createdUser) {
-      const { _id, name, userName, email } = createdUser;
+      const { _id, name, userName, email, profilePic, bio } = createdUser;
       // generating token then adding to cookie storage
       generateTokenAndSetCookie(_id, res);
       return res.status(200).json(
@@ -56,6 +58,8 @@ export async function signupController(req, res) {
           name: name,
           userName: userName,
           email: email,
+          profilePic,
+          bio
         })
       );
     } else {
