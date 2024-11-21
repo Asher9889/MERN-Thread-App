@@ -12,7 +12,7 @@ export default function SignupCard() {
   return (
     <div className="w-full bg-zinc-800 px-10 py-10 ">
       <p className="text-white text-2xl font-bold text-center">
-        Login with your credentials
+        Sign Up
       </p>
 
       <form>
@@ -66,8 +66,8 @@ export default function SignupCard() {
             />
           </div>
 
-          <button className="w-2/3 mt-6 h-10  rounded text-white bg-blue-500">
-            Login
+          <button className="w-2/3 mt-6 h-10  rounded text-white bg-blue-700 hover:bg-blue-500">
+            Sign up
           </button>
         </div>
       </form>
