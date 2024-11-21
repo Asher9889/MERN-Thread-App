@@ -3,22 +3,49 @@ import { BiSolidHide } from "react-icons/bi";
 import { BiSolidShow } from "react-icons/bi";
 import { useDispatch } from "react-redux";
 import { setAuthScreen } from "../../utils/store/authScreenSlice";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { setUser } from "../../utils/store/userSlice";
 
 export default function LoginCard() {
   const [showPassword, setShowPassword] = useState(false);
+  const [inputs, setInputs] = useState({
+    email: "",
+    password: "",
+  });
   const dispatch = useDispatch();
 
   function visiblePassword() {
     setShowPassword(!showPassword);
   }
 
-  function handleLogin(e) {
-    e.preventDefault();
-    console.log('Clicked')
+  async function handleLogin(e) {
+    try {
+      e.preventDefault();
+      // console.log(inputs);
+      const res = await fetch("/api/v1/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(inputs),
+      });
+
+      const user = await res.json();
+      if(user.error){
+        return toast.error(user.error)
+      }
+      dispatch(setUser(user.data));
+    } catch (error) {
+      toast(error.error)
+      console.log(error)
+    }
+
+    
   }
 
-  function handleSignup(){
-    dispatch(setAuthScreen("signupState"))
+  function handleSignup() {
+    dispatch(setAuthScreen("signupState"));
   }
 
   return (
@@ -37,6 +64,8 @@ export default function LoginCard() {
             type="text"
             id="name"
             required
+            onChange={(e) => setInputs({ ...inputs, email: e.target.value })}
+            value={inputs.name}
           />
           <label className="w-2/3 text-xl" htmlFor="name">
             Password
@@ -46,6 +75,10 @@ export default function LoginCard() {
               className="flex-1 h-full rounded bg-transparent outline-none"
               type={showPassword ? "text" : "password"}
               required
+              onChange={(e) =>
+                setInputs({ ...inputs, password: e.target.value })
+              }
+              value={inputs.password}
             />
             <span onClick={visiblePassword}>
               {showPassword ? (
@@ -64,8 +97,19 @@ export default function LoginCard() {
         </div>
       </form>
       <p className="text-center mt-6 text-white ">
-        Don't have an account? <span  onClick={handleSignup} className="text-blue-500 cursor-pointer hover:underline"> Sign Up</span>
+        Don't have an account?{" "}
+        <span
+          onClick={handleSignup}
+          className="text-blue-500 cursor-pointer hover:underline"
+        >
+          {" "}
+          Sign Up
+        </span>
       </p>
+      <ToastContainer
+        position="top-center"
+        theme="dark"
+      />
     </div>
   );
 }

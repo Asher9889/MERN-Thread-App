@@ -14,12 +14,11 @@ export async function signupController(req, res) {
     // object destructuring of request body
     const { name, userName, email, password } = req.body;
 
-    // checking user already register or not
-    // using userName and email
+    // checking user already register or not using userName and email
     if ([name, userName, email, password].some((input) => input == "")) {
-      res
+      return res
         .status(400)
-        .json(new FailureResponse(false, 400, "All feilds are required", {}));
+        .json(new FailureResponse(false, "All feilds are required", {}));
     }
 
     const isUserAvailable = await User.findOne({
@@ -52,7 +51,7 @@ export async function signupController(req, res) {
       // generating token then adding to cookie storage
       generateTokenAndSetCookie(_id, res);
       return res.status(200).json(
-        new SuccessResponse(200, true, "User successfully registered", {
+        new SuccessResponse(200, "User successfully registered", {
           _id: _id,
           name: name,
           userName: userName,
@@ -77,17 +76,18 @@ export async function signupController(req, res) {
 // <--------------- login logic ----------->
 export async function loginController(req, res) {
   try {
-    const { userName, password } = req.body;
+    const { email , password } = req.body;
 
     // if any element is empty it will return TRUE
-    if ([userName, password].some((element) => element == "")) {
+    if ([email, password].some((element) => element == "")) {
       return res
         .status(400)
         .json(new Failureresponse(400, "Please provide details"));
     }
 
     // checking provided username is already exists in Db or not
-    const user = await User.findOne({ userName: userName });
+    const user = await User.findOne({ email: email });
+    console.log(user);
     if (!user) {
       return res.status(400).json(new FailureResponse(400, "User not found"));
     }

@@ -1,8 +1,12 @@
 # React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AuthPage has Two Components embeded 1. Login 2. Signup
+after successfully signup user will get stored in localstorage
 
-Currently, two official plugins are available:
+# Learning
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Differnce b/w ```useNavigate``` and ```Navigate```
+ - useNavigate is a hook. Allows programmatic navigation within a React    component.
+ - Navigate is a component ```<Navigate to="/path" />```
+
+2. 
