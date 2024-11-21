@@ -1,19 +1,21 @@
 import { useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // import image from "../../assets/post1.png"
 
 export default function ProfileUpdateForm() {
-  const { name, userName, email, profilePic, bio } = useSelector(
-    (state) => state.loggedUser.user
+  const { name, userName, email, profilePic, bio, _id } = useSelector(
+    (state) => state?.loggedUser?.user // name == user.name destrcuted
   );
-  const [image, setImage] = useState();
+  const [imageURL, setImageURL] = useState();
 
   const [userInputs, setUserInputs] = useState({
-    name,
-    userName,
-    email,
-    profilePic,
-    bio
+    name: name,
+    userName: userName,
+    email: email,
+    profilePic: profilePic,
+    bio: bio,
   });
   const fileRef = useRef(null);
 
@@ -31,10 +33,30 @@ export default function ProfileUpdateForm() {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImage(e.target.result);
+        setImageURL(e.target.result);
         console.log(e.target.result);
       };
       reader.readAsDataURL(file);
+    }
+
+    // handleProfileUpdateSubmit
+  }
+
+  async function handleProfileUpdateSubmit(e) {
+    try {
+      e.preventDefault();
+      const res = await fetch(`/api/v1/users/update/${_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...userInputs, profilePic: imageURL }), //adding imgURl
+      });
+      const data = await res.json()
+      console.log("res from update compo", data);
+    } catch (error) {
+      toast.error(error.message);
+      console.log(error);
     }
   }
 
@@ -45,7 +67,7 @@ export default function ProfileUpdateForm() {
         <div className="flex flex-row items-center gap-10">
           <img
             className="w-24 h-24 object-cover rounded-full"
-            src={image}
+            src={imageURL}
             alt="profile"
           />
           <button
@@ -70,7 +92,9 @@ export default function ProfileUpdateForm() {
             id="name"
             type="text"
             value={userInputs.name}
-            onChange={(e)=> setUserInputs({...userInputs, name: e.target.value})}
+            onChange={(e) =>
+              setUserInputs({ ...userInputs, name: e.target.value })
+            }
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -80,7 +104,9 @@ export default function ProfileUpdateForm() {
             id="userName"
             type="text"
             value={userInputs.userName}
-            onChange={(e)=> setUserInputs({...userInputs, userName: e.target.value})}
+            onChange={(e) =>
+              setUserInputs({ ...userInputs, userName: e.target.value })
+            }
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -90,7 +116,9 @@ export default function ProfileUpdateForm() {
             id="email"
             type="email"
             value={userInputs.email}
-            onChange={(e)=> setUserInputs({...userInputs, email: e.target.value})}
+            onChange={(e) =>
+              setUserInputs({ ...userInputs, email: e.target.value })
+            }
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -100,7 +128,9 @@ export default function ProfileUpdateForm() {
             name="bio"
             id="bio"
             value={userInputs.bio}
-            onChange={(e)=> setUserInputs({...userInputs, bio: e.target.value})}
+            onChange={(e) =>
+              setUserInputs({ ...userInputs, bio: e.target.value })
+            }
           ></textarea>
           {/* <text className="h-10 px-2 bg-zinc-800 border-2 border-zinc-500 rounded outline-0" id="bio" type="text" /> */}
         </div>
@@ -110,18 +140,24 @@ export default function ProfileUpdateForm() {
             className="h-10 px-2 bg-zinc-800 border-2 border-zinc-500 rounded outline-0"
             id="bio"
             type="password"
-            onChange={(e)=> setUserInputs({...userInputs, password: e.target.value})}
+            onChange={(e) =>
+              setUserInputs({ ...userInputs, password: e.target.value })
+            }
           />
         </div>
         <div className="flex flex-row justify-between gap-4">
           <button className="flex-1 bg-red-500  py-2 rounded text-md font-bold">
             Cancel
           </button>
-          <button className="flex-1 bg-green-500  py-2 rounded text-md font-bold">
+          <button
+            className="flex-1 bg-green-500  py-2 rounded text-md font-bold"
+            onClick={handleProfileUpdateSubmit}
+          >
             Submit
           </button>
         </div>
       </form>
+      <ToastContainer />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import ConnectDb from "./db/connectDB.js";
 import apiRoutes from "./routes/index.js"
+import { v2 as cloudinary } from 'cloudinary'
 
 // it can make available .env file in process object asap.
 dotenv.config();
@@ -23,6 +24,14 @@ const app = express();
 
 const Port = process.env.PORT || 8080
 
+// Cloudinary configuration
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY, 
+    api_secret: process.env.CLOUDINARY_SECRET_KEY
+})
+
 
 /**
  *sending data can be done in 3 forms
@@ -33,7 +42,7 @@ const Port = process.env.PORT || 8080
 
 //  by default express can not accept 
 //  now express can accept json data
-app.use(express.json({limit: "16kb"}));
+app.use(express.json({limit: "10mb"}));
 
 //  this for parse encoded characters ex: space = %20
 //  extended true means if body has nested data express will handel it

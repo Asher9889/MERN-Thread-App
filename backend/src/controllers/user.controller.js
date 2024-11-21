@@ -6,6 +6,7 @@ import {
   generateTokenAndSetCookie,
 } from "../utils/index.js";
 import bcrypt from "bcryptjs";
+import { v2 as cloudinary } from 'cloudinary'
 
 // <-------------- singnUp logic ----------->
 
@@ -164,7 +165,8 @@ export async function followAndUnFollowUserController(req, res){
 //  after parsing get an id. then search user with id. added user object in request object
 export async function updateProfile(req,res){
   const {name,userName, email,bio, password} = req.body;
-  // we added a middleware for secure route amd added user obj in request object.
+ let { profilePic } = req.body; // updating image later
+  // we added a middleware for secure route and added user obj in request object.
   try {
     const {_id} = req.user;
     console.log(req.user);
@@ -176,16 +178,29 @@ export async function updateProfile(req,res){
     if(req.params.id !== user._id.toString()){
       return res.status(400).json(new FailureResponse(400, "You Can not update others profile"))
     }
-    user.name = name || user.name;
-    user.userName = userName || user.userName;
-    user.email = email || user.email;
-    user.bio = bio || user.bio;
+
+    
+
     // hasing given password
     if(password){
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt);
     user.password = hashedPassword || user.password;
     }
+    // saving profile pic into clodinary
+
+    if(profilePic){
+      const uploadResponse = await cloudinary.uploader.upload(profilePic)
+      const profilePic = uploadResponse.secure_url;
+      console.log("profile pic upload res: ",ProfileURL);
+    }
+
+    user.name = name || user.name;
+    user.userName = userName || user.userName;
+    user.email = email || user.email;
+    user.bio = bio || user.bio;
+    user.password = password || user.password;
+    user.profilePic = profilePic || user.profilePic
     // now saving the user provided details
     await user.save()
     return res.status(200).json(new SuccessResponse(200, "Profile successfully updated"))
