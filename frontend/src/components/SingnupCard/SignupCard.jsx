@@ -1,4 +1,14 @@
+import { useDispatch } from "react-redux";
+import { setAuthScreen } from "../../utils/store/authScreenSlice";
+
 export default function SignupCard() {
+  const dispatch = useDispatch();
+
+  function handleLogin(){
+    dispatch(setAuthScreen("loginState"))
+  }
+  
+
   return (
     <div className="w-full bg-zinc-800 px-10 py-10 ">
       <p className="text-white text-2xl font-bold text-center">
@@ -62,7 +72,7 @@ export default function SignupCard() {
         </div>
       </form>
       <p className="text-center mt-6 text-white ">
-        Don't have an account? <span className="text-blue-500 "> Sign Up</span>
+        Don't have an account? <span onClick={handleLogin} className="text-blue-500 cursor-pointer hover:underline"> Login</span>
       </p>
     </div>
   );

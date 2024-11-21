@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { BiSolidHide } from "react-icons/bi";
 import { BiSolidShow } from "react-icons/bi";
+import { useDispatch } from "react-redux";
+import { setAuthScreen } from "../../utils/store/authScreenSlice";
 
 export default function LoginCard() {
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
 
   function visiblePassword() {
     setShowPassword(!showPassword);
@@ -12,6 +15,10 @@ export default function LoginCard() {
   function handleLogin(e) {
     e.preventDefault();
     console.log('Clicked')
+  }
+
+  function handleSignup(){
+    dispatch(setAuthScreen("signupState"))
   }
 
   return (
@@ -57,7 +64,7 @@ export default function LoginCard() {
         </div>
       </form>
       <p className="text-center mt-6 text-white ">
-        Don't have an account? <span className="text-blue-500 "> Sign Up</span>
+        Don't have an account? <span  onClick={handleSignup} className="text-blue-500 cursor-pointer hover:underline"> Sign Up</span>
       </p>
     </div>
   );
