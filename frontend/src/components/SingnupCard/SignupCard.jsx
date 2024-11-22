@@ -11,6 +11,8 @@ export default function SignupCard() {
     userName: "",
     email: "",
     password: "",
+    profilePic: "",
+    bio: ""
   });
   const dispatch = useDispatch();
 

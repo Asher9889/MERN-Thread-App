@@ -1,25 +1,23 @@
 import { useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
+import { setUser } from "../../utils/store/userSlice";
 import "react-toastify/dist/ReactToastify.css";
 // import image from "../../assets/post1.png"
 
 export default function ProfileUpdateForm() {
-  const { name, userName, email, profilePic, bio, _id } = useSelector(
-    (state) => state?.loggedUser?.user // name == user.name destrcuted
-  );
+  const { name, userName, email, bio, _id } = useSelector((state) => state?.loggedUser?.user );
+  // name == user.name destrcuted
   const [imageURL, setImageURL] = useState();
 
   const [userInputs, setUserInputs] = useState({
     name: name,
     userName: userName,
     email: email,
-    profilePic: profilePic,
     bio: bio,
   });
   const fileRef = useRef(null);
-
-  // console.log(fileRef)
+  const dispatch = useDispatch();
 
   function handleChangeAvatar(e) {
     e.preventDefault();
@@ -27,20 +25,18 @@ export default function ProfileUpdateForm() {
   }
   // for image file handeling
   function handleFileChange(e) {
-    // console.log(e)
     const file = e.target.files[0];
 
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         setImageURL(e.target.result);
-        console.log(e.target.result);
+        // console.log(e.target.result);
       };
       reader.readAsDataURL(file);
     }
-
-    // handleProfileUpdateSubmit
   }
+  // handleProfileUpdateSubmit
 
   async function handleProfileUpdateSubmit(e) {
     try {
@@ -53,7 +49,15 @@ export default function ProfileUpdateForm() {
         body: JSON.stringify({ ...userInputs, profilePic: imageURL }), //adding imgURl
       });
       const data = await res.json()
-      console.log("res from update compo", data);
+      if(data.error){
+        return toast.error(data.error)
+      }
+      // dispatching updated user to store 
+      dispatch(setUser(data.data));
+      //  updating update use to local storage
+      localStorage.setItem("thread-user", JSON.stringify(data?.data))
+
+      toast.success("Profile updated successfully")
     } catch (error) {
       toast.error(error.message);
       console.log(error);

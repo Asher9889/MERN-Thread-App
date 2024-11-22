@@ -6,7 +6,7 @@ import {
   generateTokenAndSetCookie,
 } from "../utils/index.js";
 import bcrypt from "bcryptjs";
-import { v2 as cloudinary } from 'cloudinary'
+import { v2 as cloudinary } from "cloudinary";
 
 // <-------------- singnUp logic ----------->
 
@@ -43,7 +43,7 @@ export async function signupController(req, res) {
       email: email,
       password: hashedPassword,
       profilePic: "",
-      bio: ""
+      bio: "",
     });
 
     // checking user is created or not successfully
@@ -59,8 +59,8 @@ export async function signupController(req, res) {
           name: name,
           userName: userName,
           email: email,
-          profilePic,
-          bio
+          profilePic: profilePic,
+          bio: bio,
         })
       );
     } else {
@@ -81,7 +81,7 @@ export async function signupController(req, res) {
 // <--------------- login logic ----------->
 export async function loginController(req, res) {
   try {
-    const { email , password } = req.body;
+    const { email, password } = req.body;
 
     // if any element is empty it will return TRUE
     if ([email, password].some((element) => element == "")) {
@@ -109,6 +109,8 @@ export async function loginController(req, res) {
           name: user.name,
           userName: user.userName,
           email: user.email,
+          profilePic: user.profilePic,
+          bio: user.bio,
         })
       );
     } else {
@@ -121,108 +123,142 @@ export async function loginController(req, res) {
 
 // <--------------- logout logic --------------->
 
-export async function logoutController(req, res){
+export async function logoutController(req, res) {
   try {
     const options = {
       httpOnly: true,
       secure: true,
     };
     res.clearCookie("token", options);
-    return res.status(200).json(new SuccessResponse(200, "User logged out successfully"))
+    return res
+      .status(200)
+      .json(new SuccessResponse(200, "User logged out successfully"));
   } catch (error) {
-    return res.status(400).json(new FailureResponse(400, "User not logged out"))
+    return res
+      .status(400)
+      .json(new FailureResponse(400, "User not logged out"));
   }
-} 
+}
 
 // <--------------- followOrUnFollowuser ------------>
 
-export async function followAndUnFollowUserController(req, res){
-  // 
+export async function followAndUnFollowUserController(req, res) {
+  //
   const followedUser = req.params.id;
   const loggedInUser = req.user._id;
-  if(loggedInUser === followedUser){
-    return res.status(400).json(new FailureResponse(400, "Can not follow or Unfollow yourself."))
+  if (loggedInUser === followedUser) {
+    return res
+      .status(400)
+      .json(new FailureResponse(400, "Can not follow or Unfollow yourself."));
   }
   const isFollowing = req.user.following.includes(followedUser);
-  if(!isFollowing){
-    // push operator for adding the value 
-    const updatedLoggedInUser = await User.findByIdAndUpdate(loggedInUser, {$push: {following: followedUser}})
-    const updatedFollowedUser = await User.findByIdAndUpdate(followedUser, {$push: {followers: loggedInUser}})
-    return res.status(400).json(new FailureResponse(400, "successfully started following that person "))
-  }else{
+  if (!isFollowing) {
+    // push operator for adding the value
+    const updatedLoggedInUser = await User.findByIdAndUpdate(loggedInUser, {
+      $push: { following: followedUser },
+    });
+    const updatedFollowedUser = await User.findByIdAndUpdate(followedUser, {
+      $push: { followers: loggedInUser },
+    });
+    return res
+      .status(400)
+      .json(
+        new FailureResponse(400, "successfully started following that person ")
+      );
+  } else {
     // removing followed user from logged in user
     // pull operator for removing the value
-    const updatedLoggedInUser = await User.findByIdAndUpdate(loggedInUser, {$pull: {following: followedUser}})
+    const updatedLoggedInUser = await User.findByIdAndUpdate(loggedInUser, {
+      $pull: { following: followedUser },
+    });
     // removing loggedin user from followeduser
-    const updatedFollowedUser = await User.findByIdAndUpdate(followedUser, {$pull: {followers: loggedInUser}})
+    const updatedFollowedUser = await User.findByIdAndUpdate(followedUser, {
+      $pull: { followers: loggedInUser },
+    });
 
-    return res.status(200).json(new SuccessResponse(200, "Successfully unfollowed that person"))
+    return res
+      .status(200)
+      .json(new SuccessResponse(200, "Successfully unfollowed that person"));
   }
 }
 
 // <---------------- updating profile logic ----------->
-// when http request hit update route secureroute middleware get executed it search cookie from browser then parse it. 
+// when http request hit update route secureroute middleware get executed it search cookie from browser then parse it.
 //  after parsing get an id. then search user with id. added user object in request object
-export async function updateProfile(req,res){
-  const {name,userName, email,bio, password} = req.body;
- let { profilePic } = req.body; // updating image later
+export async function updateProfile(req, res) {
+  const { name, userName, email, bio, password } = req.body;
+  let { profilePic } = req.body; // updating image later
   // we added a middleware for secure route and added user obj in request object.
   try {
-    const {_id} = req.user;
-    console.log(req.user);
-    const user = await User.findById(_id)
-    if(!user){
-      return res.status(400).json(new FailureResponse(400, "User is not present. Please login first"))
+    const { _id } = req.user;
+    // console.log(req.user);
+    let user = await User.findById(_id);
+    if (!user) {
+      return res
+        .status(400)
+        .json(
+          new FailureResponse(400, "User is not present. Please login first")
+        );
     }
     // user._id is a object need to convert it to string
-    if(req.params.id !== user._id.toString()){
-      return res.status(400).json(new FailureResponse(400, "You Can not update others profile"))
+    if (req.params.id !== user._id.toString()) {
+      return res
+        .status(400)
+        .json(new FailureResponse(400, "You Can not update others profile"));
     }
 
-    
-
     // hasing given password
-    if(password){
-    const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync(password, salt);
-    user.password = hashedPassword || user.password;
+    if (password) {
+      const salt = bcrypt.genSaltSync(10);
+      const hashedPassword = bcrypt.hashSync(password, salt);
+      user.password = hashedPassword || user.password;
     }
     // saving profile pic into clodinary
 
-    if(profilePic){
-      const uploadResponse = await cloudinary.uploader.upload(profilePic)
-      const profilePic = uploadResponse.secure_url;
-      console.log("profile pic upload res: ",ProfileURL);
+    if (profilePic) {
+      // first destroy exsting  pic stored inside cloudinary
+      if(user.profilePic){
+        await cloudinary.uploader.destroy(user.profilePic.split("/").pop().split(".")[0])
+      }
+      const uploadResponse = await cloudinary.uploader.upload(profilePic);
+      profilePic = uploadResponse.secure_url;
+      // console.log("profile pic upload res: ",profilePic);
+      user.profilePic = profilePic || user.profilePic;
     }
 
     user.name = name || user.name;
     user.userName = userName || user.userName;
     user.email = email || user.email;
     user.bio = bio || user.bio;
-    user.password = password || user.password;
-    user.profilePic = profilePic || user.profilePic
+
     // now saving the user provided details
-    await user.save()
-    return res.status(200).json(new SuccessResponse(200, "Profile successfully updated"))
+    user = await user.save();
+    // for response password should be null
+    user.password = null;
+    return res
+      .status(200)
+      .json(new SuccessResponse(200, "Profile successfully updated", user));
   } catch (error) {
-     return res.status(400).json(new FailureResponse(400, error.message))
+    return res.status(400).json(new FailureResponse(400, error.message));
   }
 }
 
 // <----------------- getUserProfile ------------>
 
-export async function getUserProfile(req, res){
+export async function getUserProfile(req, res) {
   try {
     const { username } = req.params;
-    const user  = await User.findOne({userName: username}).select("-password")
-    if(!user){
-      return res.status(400).json(new FailureResponse(400, "User not found. Check username again"))
-    }else{
-      return res.status(200).json(new SuccessResponse(200, "User successfully fetch", user))
+    const user = await User.findOne({ userName: username }).select("-password");
+    if (!user) {
+      return res
+        .status(400)
+        .json(new FailureResponse(400, "User not found. Check username again"));
+    } else {
+      return res
+        .status(200)
+        .json(new SuccessResponse(200, "User successfully fetch", user));
     }
-
   } catch (error) {
-    res.status(400).json(new FailureResponse(400, error.message))
+    res.status(400).json(new FailureResponse(400, error.message));
   }
-
 }

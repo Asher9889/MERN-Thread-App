@@ -1,7 +1,10 @@
 # React + Vite
 
-AuthPage has Two Components embeded 1. Login 2. Signup
-after successfully signup user will get stored in localstorage
+AuthPage has Two Components embeded:
+ 1. Login 
+ 2. Signup
+- After successfully signup user will get stored in localstorage
+- during Auth user dispatched to store.
 
 # Learning
 
@@ -9,4 +12,4 @@ after successfully signup user will get stored in localstorage
  - useNavigate is a hook. Allows programmatic navigation within a React    component.
  - Navigate is a component ```<Navigate to="/path" />```
 
-2. 
+2. ```CLOUDINARY``` stores images with key or public id. just need to destory key from the cloud. we get url from secure_url property.
