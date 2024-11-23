@@ -1,9 +1,10 @@
 import { ContentWrapper, Header, UserPost} from './components'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { UserPage, PostPage, AuthPage, UpdateProfile} from './pages'
 import { useSelector } from 'react-redux'
 import './App.css'
 import HomePage from './pages/home-page/HomePage'
+import { useEffect } from 'react'
 
 
 
@@ -11,6 +12,13 @@ import HomePage from './pages/home-page/HomePage'
 function App() {
   
   const user = useSelector((state) => state.loggedUser.user)
+  const navigate = useNavigate()
+
+  useEffect(()=>{
+    if(!user){
+      navigate("/auth")
+    }
+  },[user])
 
 
  
@@ -21,8 +29,8 @@ function App() {
         {/* Header for all routes */}
         <Header />
           <Routes>
-            <Route path="/" element={user ? <HomePage /> : <Navigate to="/" /> } />
-            <Route path="/:username" element={<UserPage />}></Route>
+            <Route path="/" element={user ? <HomePage /> : <Navigate to="/auth" /> } />
+            <Route path="/:username" element={<UserPage /> }></Route>
             <Route path="/:username/post/:pid" element={<PostPage />}></Route>
             <Route path="/update" element={ user ? <UpdateProfile /> : <Navigate to="/auth" />}/>
             <Route path="/auth" element={user ? <Navigate to="/" /> : <AuthPage />}></Route>   

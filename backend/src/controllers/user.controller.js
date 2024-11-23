@@ -163,7 +163,7 @@ export async function followAndUnFollowUserController(req, res) {
     return res
       .status(400)
       .json(
-        new FailureResponse(400, "successfully started following that person ")
+        new SuccessResponse(400, "successfully started following")
       );
   } else {
     // removing followed user from logged in user
@@ -178,7 +178,7 @@ export async function followAndUnFollowUserController(req, res) {
 
     return res
       .status(200)
-      .json(new SuccessResponse(200, "Successfully unfollowed that person"));
+      .json(new SuccessResponse(200, "Successfully unfollowed"));
   }
 }
 
