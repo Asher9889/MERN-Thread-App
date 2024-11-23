@@ -3,31 +3,56 @@ import User from "../models/user.model.js";
 import Failureresponse from "../utils/FailureResponse.js";
 import FailureResponse from "../utils/FailureResponse.js";
 import SuccessResponse from "../utils/SuccessResponse.js";
+import { v2 as cloudinary } from "cloudinary";
 
 export async function createPost(req, res) {
-  let { text, image } = req.body;
-  // we protected the route. middleware checks for cookie and decoded it then gets id. it makes request to db then finded user added to req object
+  try {
+    let { text, image, postedBy } = req.body;
+    // we protected the route. middleware checks for cookie and decoded it then gets id. it makes request to db then finded user added to req object
 
-  // logged in user given by middleware
-  const { user } = req;
-  if (!user) {
-    return res
-      .status(404)
-      .json(new FailureResponse(404, "Please first login then try!!"));
-  }
-  let userID = user._id;
-  let message = text;
-  if ([userID, message].some((elem) => elem === "")) {
-    return res
-      .status(400)
-      .json(400, "Post text and postedBy is mandatory to create post");
-  }
+    // logged in user given by middleware
+    const { user } = req;
 
-  const newPost = new Post({ postedBy: userID, text: message });
-  await newPost.save();
-  return res
-    .status(200)
-    .json(new SuccessResponse(200, "Post is successfully created"));
+    if (!user) {
+      return res
+        .status(404)
+        .json(new FailureResponse(404, "Please first login then try!!"));
+    }
+    // userID from loggedIn
+    let userID = user._id;
+
+    if (userID.toString() !== postedBy.toString()) {
+      return res
+        .status(400)
+        .json(new FailureResponse(404, "Unauthorized to create post."));
+    }
+
+    let message = text;
+    if ([userID, message].some((elem) => elem == "")) {
+      return res
+        .status(400)
+        .json(
+          new FailureResponse(400, "Post text is mandatory to create post")
+        );
+    }
+
+    if (image) {
+      const res = await cloudinary.uploader.upload(image);
+      // updated image cloudinary url
+      image = res.secure_url;
+    }
+    const newPost = new Post({
+      postedBy: userID,
+      text: message,
+      image: image || "",
+    });
+    await newPost.save();
+    return res
+      .status(200)
+      .json(new SuccessResponse(200, "Post is successfully created", newPost));
+  } catch (error) {
+    return res.status(200).json(new FailureResponse(400, error.message));
+  }
 }
 
 export async function getPost(req, res) {
@@ -124,7 +149,7 @@ export async function commentToPost(req, res) {
         );
     }
     const { id } = req.params;
-    const { _id, userName, userProfilePic} = req.user;
+    const { _id, userName, userProfilePic } = req.user;
     const data = {
       _id: _id,
       userName: userName,
@@ -132,7 +157,7 @@ export async function commentToPost(req, res) {
       userProfilePic: userProfilePic || "",
     };
     const updatedPost = await Post.findByIdAndUpdate(id, {
-      $push: { comment: data }
+      $push: { comment: data },
     });
     // console.log(updatedPost);
     if (!updatedPost) {
@@ -142,32 +167,36 @@ export async function commentToPost(req, res) {
       .status(200)
       .json(new SuccessResponse(200, "Comment successfully posted"));
   } catch (error) {
-    return res
-    .status(200)
-    .json(new FailureResponse(500, error.message));
-    
+    return res.status(200).json(new FailureResponse(500, error.message));
   }
 }
 
 // ------------- Feed Post --------------------
-export async function getFeedPosts(req, res){
+export async function getFeedPosts(req, res) {
   try {
     const userId = req.user._id;
     const user = await User.findById(userId);
-    if(!user){
-      return res.status(404).json(new FailureResponse(404, "User Not Found. Login first"))
+    if (!user) {
+      return res
+        .status(404)
+        .json(new FailureResponse(404, "User Not Found. Login first"));
     }
     const following = user.following;
-    console.log("following: ",following);
+    console.log("following: ", following);
     // user jisko bhi follow krega uski id nikali then post model mai search kiya.
-    const posts = await Post.find({postedBy: {$in: following}}).sort({createdAt: -1});
-    if(posts.length <1){
-      return res.status(200).json(new SuccessResponse(200, "No post is available. Please follow others"))
-    }else{
-      return res.status(200).json(new SuccessResponse(200, posts))
+    const posts = await Post.find({ postedBy: { $in: following } }).sort({
+      createdAt: -1,
+    });
+    if (posts.length < 1) {
+      return res
+        .status(200)
+        .json(
+          new SuccessResponse(200, "No post is available. Please follow others")
+        );
+    } else {
+      return res.status(200).json(new SuccessResponse(200, posts));
     }
   } catch (error) {
     return res.status(500).json(500, error.message);
   }
-
 }

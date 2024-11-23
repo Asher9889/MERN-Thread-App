@@ -5,5 +5,7 @@ import Toast from "./toast/Toast";
 import UserPost from "./UserPost/UserPost";
 import GetApp from "./GetApp/GetApp";
 import Comment from "./Comment/Comment";
+import CreatePostBtn from "./CreatePost/CreatePostBtn";
+import CreatePostPopupCard from "./CreatePost/CreatePostPopupCard";
 
-export { ContentWrapper, Header, UserHeader, Toast, UserPost, GetApp, Comment }
+export { ContentWrapper, Header, UserHeader, Toast, UserPost, GetApp, Comment, CreatePostBtn, CreatePostPopupCard }

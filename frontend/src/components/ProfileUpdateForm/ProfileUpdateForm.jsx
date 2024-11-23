@@ -6,9 +6,10 @@ import "react-toastify/dist/ReactToastify.css";
 // import image from "../../assets/post1.png"
 
 export default function ProfileUpdateForm() {
-  const { name, userName, email, bio, _id } = useSelector((state) => state?.loggedUser?.user );
+  const { name, userName, email, bio, _id, profilePic } = useSelector((state) => state?.loggedUser?.user );
   // name == user.name destrcuted
   const [imageURL, setImageURL] = useState();
+  const [updating, setUpdating] = useState(false);
 
   const [userInputs, setUserInputs] = useState({
     name: name,
@@ -39,6 +40,9 @@ export default function ProfileUpdateForm() {
   // handleProfileUpdateSubmit
 
   async function handleProfileUpdateSubmit(e) {
+    if(updating) return;
+    // it avoids double click
+    setUpdating(true)
     try {
       e.preventDefault();
       const res = await fetch(`/api/v1/users/update/${_id}`, {
@@ -61,6 +65,8 @@ export default function ProfileUpdateForm() {
     } catch (error) {
       toast.error(error.message);
       console.log(error);
+    } finally{
+      setUpdating(false);
     }
   }
 
@@ -71,7 +77,7 @@ export default function ProfileUpdateForm() {
         <div className="flex flex-row items-center gap-10">
           <img
             className="w-24 h-24 object-cover rounded-full"
-            src={imageURL}
+            src={imageURL ? imageURL : profilePic }
             alt="profile"
           />
           <button
@@ -153,15 +159,21 @@ export default function ProfileUpdateForm() {
           <button className="flex-1 bg-red-500  py-2 rounded text-md font-bold">
             Cancel
           </button>
-          <button
-            className="flex-1 bg-green-500  py-2 rounded text-md font-bold"
+          {updating ? 
+          <div className="flex flex-1 justify-center items-center bg-green-500 rounded">
+             <span class="loader "></span>
+          </div>
+           
+          : <button
+            className={"flex-1 bg-green-500  py-2 rounded text-md font-bold"}
             onClick={handleProfileUpdateSubmit}
           >
-            Submit
-          </button>
+           Submit
+          </button>}
+          
         </div>
       </form>
-      <ToastContainer />
+      <ToastContainer theme="dark" />
     </div>
   );
 }

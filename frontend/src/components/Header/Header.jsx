@@ -18,14 +18,14 @@ export default function Header (){
     }
     return (
         <nav className="flex flex-row justify-center py-3">
-            <button>
-                <img className="w-8 " src={Dlogo} alt="" />
+            
+                <Link to={"/"}><img className="w-8 " src={Dlogo} alt="" /></Link>
                 <button onClick={()=> navigate("/update")} className="bg-red-800">Update</button>
                 <button onClick={logoutUser} className="bg-yellow-500 p-2">Logout</button>
                 <Link to={`/${userName}`}><button  className="bg-yellow-500 p-2">Profile</button></Link>
                 <Link to={`/test101`}><button  className="bg-yellow-500 p-2">Profile 101</button></Link>
             
-            </button>
+            
         </nav>
     )
 }
