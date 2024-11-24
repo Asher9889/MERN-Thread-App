@@ -22,6 +22,7 @@ export default function HomePage() {
     getFeed();
   }, []);
 
+    //   fetching user feed
   async function getFeed() {
     try {
       const res = await fetch("/api/v1/posts/feed");
@@ -36,31 +37,36 @@ export default function HomePage() {
     openNewPostCard((prev) => !prev);
   }
 
-  if (!posts) {
-    return <h1 className="bg-red-800">Loading...</h1>; // Loading state
-  }
+  
 
-  if (posts?.data?.length === 0) {
-    console.log("I am executed")
-    return <h1 className="bg-red-800">Please follow others to see the posts</h1>;
-  }
+//   if (posts?.data?.length === 0) {
+//     return (
+//       <h1 className="bg-red-800">Please follow others to see the posts</h1>
+//     );
+//   }
 
+  if(!posts){
+    return (
+        <div className=" flex justify-center  pt-20 ">
+            <div className="loader">
+
+            </div>
+        </div>
+    )
+  }
 
   return (
-    <><div className="py-4">
-
-    
-      <div className="">
-        {showPostCardPopup && (
-          <CreatePostPopupCard setPostCardPopup={setPostCardPopup} />
-        )}
-      </div>
-      <div onClick={handlePostCardPopup}>
-        <CreatePostBtn />
-      </div>
-      <div>{posts && posts.data.map((post)=> (
-            <UserPost post={post}  />
-      )) }</div>
+    <>
+      <div className="py-4">
+        <div className="">
+          {showPostCardPopup && (
+            <CreatePostPopupCard setPostCardPopup={setPostCardPopup} />
+          )}
+        </div>
+        <div onClick={handlePostCardPopup}>
+          <CreatePostBtn />
+        </div>
+        <div>{posts && posts.data.map((post) => <UserPost key={post._id} post={post} />)}</div>
       </div>
     </>
   );

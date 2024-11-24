@@ -93,7 +93,7 @@ export async function loginController(req, res) {
 
     // checking provided username is already exists in Db or not
     const user = await User.findOne({ email: email });
-    console.log(user);
+    // console.log(user);
     if (!user) {
       return res.status(400).json(new FailureResponse(400, "User not found"));
     }
@@ -248,18 +248,16 @@ export async function updateProfile(req, res) {
 
 export async function getUserProfile(req, res) {
   try {
-    const { username } = req.params;
-    // console.log(req.params)
+    const { query } = req.params;
     let user;
     // console.log("query is ",query)
-    if(mongoose.Types.ObjectId.isValid(username)){
+    if(mongoose.Types.ObjectId.isValid(query)){
       // here username is a id
-      user = await User.findById({_id: username}).select("-password")
+      user = await User.findById({_id: query}).select("-password")
     }else{
-      user = await User.findOne({ userName: username }).select("-password");
-      console.log("i am executed")
+      user = await User.findOne({ userName: query }).select("-password");
     }
-     console.log("User is", user)
+
     if (!user) {
       return res
         .status(400)

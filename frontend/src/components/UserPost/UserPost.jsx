@@ -8,10 +8,12 @@ import { FaRetweet } from "react-icons/fa6";
 import { FiSend } from "react-icons/fi";
 import { BsDot } from "react-icons/bs";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function UserPost({ post }) {
   const [isLiked, setLiked] = useState(false);
   const [postOwner, setPostOwner] = useState(null);
+  const navigate = useNavigate();
 
   function handleLikeClick() {
     setLiked((prev) => !prev);
@@ -19,15 +21,15 @@ export default function UserPost({ post }) {
 
   useEffect(() => {
     findPostOwner();
-  }, [post]);
+  }, [navigate,post]);
 
   async function findPostOwner() {
     try {  
-      if (post) {
+     
         const res = await fetch(`/api/v1/users/profile/${post?.postedBy}`);
         const user = await res.json();
         setPostOwner(user.data)
-      }
+      
     } catch (error) { 
       console.log(error);
     }
@@ -35,8 +37,8 @@ export default function UserPost({ post }) {
 
   return (
     <section className="w-full border-b-2 border-[var(--white3-color)] h-fit  flex flex-row  py-5">
-      <div className="flex   flex-col justify-between items-center">
-        <img className="w-12 h-12 rounded-full " src={postOwner?.profilePic} alt="" />
+      <div  className="flex   flex-col justify-between items-center">
+        <img onClick={()=> navigate(`/${postOwner?.userName}`)} className="cursor-pointer w-12 h-12 rounded-full " src={postOwner?.profilePic} alt="" />
         <div className="h-full flex-1 bg-[var(--white3-color)] w-[1.5px] my-2" />
         {/* <div className="relative w-full h-[50px]">
           <img
@@ -57,9 +59,9 @@ export default function UserPost({ post }) {
         </div> */}
       </div>
 
-      <div className="w-full ">
+      <div className="w-full">
         <div className="text-white pl-4 pr-2 flex flex-row justify-between">
-          <h4 className="font-bold">{postOwner?.name}</h4>
+          <h4  onClick={()=> navigate(`/${postOwner?.userName}`)} className="cursor-pointer font-bold">{postOwner?.name}</h4>
 
           <span className="flex flex-row gap-2">
             <p className="text-[var(--white3-color)]">1d</p>
@@ -75,6 +77,7 @@ export default function UserPost({ post }) {
             className="pt-4 object-cover rounded-md apect-video"
             src={post?.image}
             alt=""
+            onClick={()=>navigate(`/${postOwner?.userName}/post/${post._id}`)}
           />
         </div>
 
@@ -100,7 +103,7 @@ export default function UserPost({ post }) {
         </div>
 
         <div className=" text-[var(--white3-color)] pl-4 text-base   flex flex-row items-center gap-2">
-          <p>{postOwner.replies.length} replies</p>
+          <p>{postOwner?.replies?.length} replies</p>
           <BsDot />
           <button>{post?.likes + (isLiked ? 1 : 0)} likes</button>
         </div>

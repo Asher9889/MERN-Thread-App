@@ -12,7 +12,9 @@ router.post("/follow/:id",userMiddleware.protectedRoute , userController.followA
 // i write functionality like toggling. It do both If followed then unfollow. vise versa
 router.put("/update/:id", userMiddleware.protectedRoute, userController.updateProfile);
 // no need to protect the route
-router.get("/profile/:username",userController.getUserProfile)
+
+// we can search either username or object id of user
+router.get("/profile/:query",userController.getUserProfile)
 
 
 export default router;
