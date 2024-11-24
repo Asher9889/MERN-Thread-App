@@ -1,4 +1,4 @@
-import { ContentWrapper, Header, UserPost} from './components'
+import { ContentWrapper, Header, LeftHeader, UserPost} from './components'
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { UserPage, PostPage, AuthPage, UpdateProfile} from './pages'
 import { useSelector } from 'react-redux'
@@ -27,7 +27,8 @@ function App() {
     <main className='bg-[var(--black-color)] min-h-screen'>
       <ContentWrapper>
         {/* Header for all routes */}
-        <Header />
+        {user && <LeftHeader />}
+        {!user && <Header />}
           <Routes>
             <Route path="/" element={user ? <HomePage /> : <Navigate to="/auth" /> } />
             <Route path="/:username" element={<UserPage /> }></Route>

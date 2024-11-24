@@ -11,7 +11,6 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function UserHeader({ user }) {
   const [isCopyBtnActive, setIsCopyBtnActive] = useState(false);
-  console.log(user);
 
   const [follow, setFollow] = useState(false);
 

@@ -182,20 +182,22 @@ export async function getFeedPosts(req, res) {
         .json(new FailureResponse(404, "User Not Found. Login first"));
     }
     const following = user.following;
-    console.log("following: ", following);
+    // console.log("following: ", following);
     // user jisko bhi follow krega uski id nikali then post model mai search kiya.
     const posts = await Post.find({ postedBy: { $in: following } }).sort({
       createdAt: -1,
     });
+    console.log(posts);
     if (posts.length < 1) {
       return res
         .status(200)
         .json(
-          new SuccessResponse(200, "No post is available. Please follow others")
+          new SuccessResponse(200, "No post is available. Please follow others",posts)
         );
-    } else {
-      return res.status(200).json(new SuccessResponse(200, posts));
-    }
+    } 
+      
+    return res.status(200).json(new SuccessResponse(200,"Successfully fetchted the posts", posts));
+    
   } catch (error) {
     return res.status(500).json(500, error.message);
   }

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import User from "../models/user.model.js";
 import Failureresponse from "../utils/FailureResponse.js";
 import {
@@ -248,11 +249,21 @@ export async function updateProfile(req, res) {
 export async function getUserProfile(req, res) {
   try {
     const { username } = req.params;
-    const user = await User.findOne({ userName: username }).select("-password");
+    // console.log(req.params)
+    let user;
+    // console.log("query is ",query)
+    if(mongoose.Types.ObjectId.isValid(username)){
+      // here username is a id
+      user = await User.findById({_id: username}).select("-password")
+    }else{
+      user = await User.findOne({ userName: username }).select("-password");
+      console.log("i am executed")
+    }
+     console.log("User is", user)
     if (!user) {
       return res
         .status(400)
-        .json(new FailureResponse(400, "User not found. Check username again"));
+        .json(new FailureResponse(400, "User not found. Check username or id again"));
     } else {
       return res
         .status(200)
