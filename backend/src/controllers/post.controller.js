@@ -41,7 +41,7 @@ export async function createPost(req, res) {
       // updated image cloudinary url
       image = res.secure_url;
     }
-    const newPost = new Post({
+    let newPost = new Post({
       postedBy: userID,
       text: message,
       image: image || "",
@@ -105,32 +105,37 @@ export async function deletePost(req, res) {
 export async function likeAndUnlike(req, res) {
   try {
     const { id: postId } = req.params;
-    console.log("post id is ", postId);
+  
+
     const userId = req.user._id;
-    const post = await Post.findById(postId);
-    console.log("post is: ", post);
+    let post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json(new FailureResponse(404, "Post not found"));
     }
 
+    let updated_post;
     if (post.likes.includes(userId)) {
       // unlike the post
-      await Post.findByIdAndUpdate(
+      updated_post = await Post.findByIdAndUpdate(
         { _id: postId },
-        { $pull: { likes: userId } }
+        { $pull: { likes: userId } },
+        { new: true } // return updated data
       );
+      // console.log("if liked post id found remove it")
       return res
         .status(200)
-        .json(new SuccessResponse(200, "Post successfully unliked"));
+        .json(new SuccessResponse(200, "Post successfully unliked", updated_post));
     } else {
       // like the post
-      await Post.findByIdAndUpdate(
+      updated_post = await Post.findByIdAndUpdate(
         { _id: postId },
-        { $push: { likes: userId } }
+        { $push: { likes: userId } },
+        { new: true } // now will return upadted data
       );
+      // console.log("if liked post id not found userID add it")
       return res
         .status(200)
-        .json(new SuccessResponse(200, "Post successfully liked"));
+        .json(new SuccessResponse(200, "Post successfully liked", updated_post));
     }
   } catch (error) {
     return res.status(500).json(new FailureResponse(500, error.message));

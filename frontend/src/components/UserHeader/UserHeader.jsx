@@ -67,7 +67,7 @@ export default function UserHeader({ user }) {
       <div className="flex flex-row justify-between w-full">
         <div className="w-2/3 ">
           <h1 className="text-[var(--white1-color)] text-lg sm:text-2xl font-semibold ">
-            {user?.name}
+            {user.name}
           </h1>
           <h3 className="text-sm xs:text-base sm:text-lg text-zinc-400">
             {user.userName}

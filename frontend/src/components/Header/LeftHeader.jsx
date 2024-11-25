@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 export default function LeftHeader() {
 
   const openNewPostCard = useSelector((state)=> state.appFunctionality.openNewPostCard)
-  const user = useSelector((state)=> state.loggedUser.user)
+  const user = useSelector((state)=> state?.loggedUser?.user)
   const navigate = useNavigate()
 
 
@@ -30,7 +30,7 @@ export default function LeftHeader() {
             <FaPlus />
           </span>
         
-        <span onClick={()=> navigate(`/${user.userName}`)}  className="hover:bg-zinc-800 transition-all w-14 h-12 rounded-lg flex justify-center items-center cursor-pointer">
+        <span onClick={()=> navigate(`/${user?.userName}`)}  className="hover:bg-zinc-800 transition-all w-14 h-12 rounded-lg flex justify-center items-center cursor-pointer">
           <IoIosContact />
         </span>
       </div>

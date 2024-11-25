@@ -18,16 +18,26 @@ export default function PostPage(){
             const res = await fetch(`/api/v1/posts/${pid}`)
             const data = await res.json();
 
-            setPostData(data.data);
             if(data.error){
-                toast.error(data.error);
+                return toast.error(data.error);
             }
+            setPostData(data.data);
 
         } catch (error) {
             console.log(error)
             toast.error(error.message);
         }
     }
+    if(!postData){
+        return (
+            <div className=" flex justify-center  pt-20 ">
+                <div className="loader">
+    
+                </div>
+            </div>
+        )
+      }
+      
     return (
         <div>
             <UserPost post={postData}/>

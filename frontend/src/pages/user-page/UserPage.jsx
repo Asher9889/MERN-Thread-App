@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
 import { UserHeader, UserPost } from "../../components"
+import { toast } from "react-toastify";
 
 export default function UserPage(){
     const [user, setUser] = useState(null);
@@ -15,6 +16,10 @@ export default function UserPage(){
         try {
             const res = await fetch(`/api/v1/users/profile/${username}`)
             const user = await res.json();
+            if(user.error){
+                return toast(user.error);
+            }
+            console.log(user);
             setUser(user.data);
         } catch (error) {
             console.log(error)
@@ -25,15 +30,15 @@ export default function UserPage(){
         // Show a loading state or a fallback UI while user data is being fetched
         // will show shimmer ui later
         return <p>Loading user data...</p>;
-      }
+    }
     
 
     return (
         <section className="w-full ">
             <UserHeader user={user} />
+            {/* <UserPost />
             <UserPost />
-            <UserPost />
-            <UserPost />
+            <UserPost /> */}
         </section>
     )
 }
